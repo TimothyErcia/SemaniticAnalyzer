@@ -59,7 +59,7 @@ namespace CompilerMachineProblem2
                 if (type.Equals("int") || type.Equals("string") || type.Equals("double") || type.Equals("float") || type.Equals("char") ||
                     type.Equals("+") || type.Equals("-") || type.Equals("/") || type.Equals("*") || type.Equals("void") ||
                     type.Equals("main") || type.Equals("scanf") || type.Equals("printf") || type.Equals("=") || type.Equals("(") || type.Equals(")") ||
-                    type.Equals(";") || type.StartsWith("\"") || type.EndsWith("\"") || type.EndsWith(";"))
+                    type.Equals(";") || type.StartsWith("\"") || type.EndsWith("\"") || type.EndsWith(";") || type.StartsWith("(") || type.StartsWith(")"))
                 {
                     return false;
                 }
@@ -262,61 +262,28 @@ namespace CompilerMachineProblem2
                             if (check.HasLscope(str[i + 2]))
                             {
                                 getList.AddLast(str[i + 2]);
-                                if(check.HasRscope(str[i + 3]))
+                                if (check.HasRscope(str[i + 3]))
                                 {
                                     getList.AddLast(str[i + 3]);
-                                    i = i + 4;
-
-                                    if (check.HasRbrace(str[i]))
+                                    if(check.HasLbrace(str[i + 4]))
                                     {
                                         cBrace++;
-                                        if (cBrace % 2 == 0)
-                                        {
-                                            getList.AddLast(str[i]);
-                                            i = i + 1;
-                                        }
-                                        else if (cBrace == 1)
-                                        {
-                                            richTextBox3.AppendText("\n Missing { brace");
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            richTextBox3.AppendText("\n Missing { brace");
-                                            break;
-                                        }
-                                    }
-
-                                    else if (check.HasLbrace(str[i]))
-                                    {
-                                        cBrace++;
-                                        if (cBrace % 2 == 0)
-                                        {
-                                            getList.AddLast(str[i]);
-                                            i = i + 1;
-                                        }
-                                        else if (cBrace == 1)
-                                        {
-                                            richTextBox3.AppendText("\n Missing } brace");
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            richTextBox3.AppendText("\n Missing } brace");
-                                            break;
-                                        }
+                                        getList.AddLast(str[i + 4]);
+                                        i = i + 5;
+                                        goto BRACE;
                                     }
                                     else
                                     {
-                                        richTextBox3.AppendText("\n Missing { } brace");
+                                        richTextBox3.AppendText("\n Syntax Error: Missing }");
                                         break;
                                     }
-
                                 }
                                 else
-                                { errorList.Add(str[i + 3]);
-                                    richTextBox3.AppendText("\n Missing )");
-                                    break; }
+                                {
+                                    errorList.Add(str[i + 3]);
+                                    richTextBox3.AppendText("\n Syntax Error: Missing )");
+                                    break;
+                                }
                             }
                             else
                             { errorList.Add(str[i + 2]);
@@ -328,16 +295,41 @@ namespace CompilerMachineProblem2
                             richTextBox3.AppendText("\n Missing keyword");
                             break; }
                     }
-
                     else
-                    { errorList.Add(str[i]); break; }
+                    { richTextBox3.AppendText("\n Missing Datatype");
+                        break; }
+
+
+                    BRACE:
+                    if (check.HasRbrace(str[i]))
+                    {
+                        cBrace++;
+                        if (cBrace % 2 == 0)
+                        {
+                            getList.AddLast(str[i]);
+                            i = i + 1;
+                        }
+                        else if (cBrace == 1)
+                        {
+                            richTextBox3.AppendText("\n Missing { brace");
+                            break;
+                        }
+                        else
+                        {
+                            richTextBox3.AppendText("\n Missing { brace");
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        richTextBox3.AppendText("\n Missing } brace");
+                        break;
+                    }
 
                 } while (i <= str.Length);
             }
             catch
-            {
-                 
-            }
+            { }
                 
             foreach(var item in getList)
             {
