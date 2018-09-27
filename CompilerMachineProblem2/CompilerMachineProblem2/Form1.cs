@@ -60,7 +60,8 @@ namespace CompilerMachineProblem2
                 if (type.Equals("int") || type.Equals("string") || type.Equals("double") || type.Equals("float") || type.Equals("char") ||
                     type.Equals("+") || type.Equals("-") || type.Equals("/") || type.Equals("*") || type.Equals("void") ||
                     type.Equals("main") || type.Equals("scanf") || type.Equals("printf") || type.Equals("=") || type.Equals("(") || type.Equals(")") ||
-                    type.Equals(";") || type.StartsWith("\"") || type.EndsWith("\"") || type.EndsWith(";") || type.StartsWith("(") || type.StartsWith(")"))
+                    type.Equals(";") || type.StartsWith("\"") || type.EndsWith("\"") || type.EndsWith(";") || type.StartsWith("(") || type.StartsWith(")")
+                    || type.StartsWith("{") || type.StartsWith("}") || type.Equals("{") || type.Equals("}"))
                 {
                     return false;
                 }
@@ -291,11 +292,10 @@ namespace CompilerMachineProblem2
                                         cBrace++;
                                         getList.AddLast(str[i + 4]);
                                         i = i + 5;
-                                        goto BRACE;
                                     }
                                     else
                                     {
-                                        richTextBox3.AppendText("\n Syntax Error: Missing }");
+                                        richTextBox3.AppendText("\n Missing { brace");
                                         break;
                                     }
                                 }
@@ -316,25 +316,15 @@ namespace CompilerMachineProblem2
                             richTextBox3.AppendText("\n Missing keyword");
                             break; }
                     }
-                    else
-                    { richTextBox3.AppendText("\n Missing Datatype");
-                        break; }
 
-
-                    BRACE:
-                    //if brace has closine brace
-                    if (check.HasRbrace(str[i]))
+                    //if function has opening brace
+                    else if (check.HasRbrace(str[i]))
                     {
                         cBrace++;
                         if (cBrace % 2 == 0)
                         {
                             getList.AddLast(str[i]);
-                            i = i + 1;
-                        }
-                        else if (cBrace == 1)
-                        {
-                            richTextBox3.AppendText("\n Missing { brace");
-                            break;
+                            i = i + 2;
                         }
                         else
                         {
@@ -342,9 +332,10 @@ namespace CompilerMachineProblem2
                             break;
                         }
                     }
+
                     else
                     {
-                        richTextBox3.AppendText("\n Missing } brace");
+                        richTextBox3.AppendText("\n Missing Datatype");
                         break;
                     }
 
@@ -366,7 +357,6 @@ namespace CompilerMachineProblem2
 
         private void button2_Click(object sender, EventArgs e)
         {
-            richTextBox1.Text = "";
             richTextBox2.Text = "";
             richTextBox3.Text = "";
             richTextBox4.Text = "";
