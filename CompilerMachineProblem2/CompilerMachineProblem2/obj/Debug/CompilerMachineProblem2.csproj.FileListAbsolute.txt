@@ -1,0 +1,10 @@
+D:\PROG_STUFF\C#\CompilerMachineProblem2\CompilerMachineProblem2\bin\Debug\CompilerMachineProblem2.exe.config
+D:\PROG_STUFF\C#\CompilerMachineProblem2\CompilerMachineProblem2\bin\Debug\CompilerMachineProblem2.exe
+D:\PROG_STUFF\C#\CompilerMachineProblem2\CompilerMachineProblem2\bin\Debug\CompilerMachineProblem2.pdb
+D:\PROG_STUFF\C#\CompilerMachineProblem2\CompilerMachineProblem2\obj\Debug\CompilerMachineProblem2.csprojAssemblyReference.cache
+D:\PROG_STUFF\C#\CompilerMachineProblem2\CompilerMachineProblem2\obj\Debug\CompilerMachineProblem2.Form1.resources
+D:\PROG_STUFF\C#\CompilerMachineProblem2\CompilerMachineProblem2\obj\Debug\CompilerMachineProblem2.Properties.Resources.resources
+D:\PROG_STUFF\C#\CompilerMachineProblem2\CompilerMachineProblem2\obj\Debug\CompilerMachineProblem2.csproj.GenerateResource.cache
+D:\PROG_STUFF\C#\CompilerMachineProblem2\CompilerMachineProblem2\obj\Debug\CompilerMachineProblem2.csproj.CoreCompileInputs.cache
+D:\PROG_STUFF\C#\CompilerMachineProblem2\CompilerMachineProblem2\obj\Debug\CompilerMachineProblem2.exe
+D:\PROG_STUFF\C#\CompilerMachineProblem2\CompilerMachineProblem2\obj\Debug\CompilerMachineProblem2.pdb
