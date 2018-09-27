@@ -14,6 +14,7 @@ namespace CompilerMachineProblem2
     public partial class Form1 : Form
     {
         string txt;
+        //Lexical Analyzer
         class VarDeclareCheck
         {
             public bool HasDtype(string type)
@@ -123,6 +124,7 @@ namespace CompilerMachineProblem2
 
         private void button1_Click(object sender, EventArgs e)
         {
+            //Initial Text
             txt = richTextBox1.Text;
             txt = txt.Replace(" ", "\n");
             txt = txt.Replace("(", "(\n");
@@ -135,6 +137,8 @@ namespace CompilerMachineProblem2
             int j = 2;
             int i = 0;
             int cBrace = 0;
+
+            //Algorithm
             try
             {
                 do
@@ -143,9 +147,11 @@ namespace CompilerMachineProblem2
                     if (check.HasDtype(str[i]))
                     {
                         getList.AddLast(str[i]);
+                        //If it has Identifier or Constant
                         if(check.HasTERM(str[i + 1]))
                         {
                             getList.AddLast(str[i + 1]);
+                            //if it has a Semicolon
                             if(check.HasSemi(str[i + 2]))
                             {
                                 getList.AddLast(str[i + 2]);
@@ -155,9 +161,11 @@ namespace CompilerMachineProblem2
                             else if (check.HasExpression(str[i + 2]))
                             {
                                 getList.AddLast(str[i + 2]);
+                                //if it has double quote in the beggining or in the end
                                 if (check.HasStringLiteral(str[i + 3]))
                                 {
                                     getList.AddLast(str[i + 3]);
+                                    //if it has semicolon
                                     if(check.HasSemi(str[i + 4]))
                                     {
                                         getList.AddLast(str[i + 4]);
@@ -168,17 +176,21 @@ namespace CompilerMachineProblem2
                                         richTextBox3.AppendText("\n Missing ;");
                                         break; }
                                 }
+                                //else if it has TERM or double quote (string)
                                 else if (check.HasTERM(str[i + 3]) || check.HasStringLiteral(str[i + 3]))
                                 {
                                     getList.AddLast(str[i + 3]);
+                                    //if it has operator
                                     if (check.HasOperator(str[i + 4]))
                                     {
                                         getList.AddLast(str[i + 4]);
-                                        if (check.HasTERM(str[i + 5]))
+                                        //if it has TERM or double quote
+                                        if (check.HasTERM(str[i + 5]) || check.HasStringLiteral(str[i + 5]))
                                         {
                                             getList.AddLast(str[i + 5]);
                                             i = i + 6;
                                         }
+                                        //or if it has Semicolon or double quote (string)
                                         else if (check.HasSemi(str[i + 5]) || check.HasStringLiteral(str[i + 5]))
                                         {
                                             getList.AddLast(str[i + 5]);
@@ -214,22 +226,27 @@ namespace CompilerMachineProblem2
                     else if(check.HasKeyword(str[i]))
                     {
                         getList.AddLast(str[i]);
+                        //if it has ( parenthesis
                         if (check.HasLscope(str[i + 1]))
                         {
                             getList.AddLast(str[i + 1]);
+                            //if it has double quote or ) parenthesis
                             if(check.HasStringLiteral(str[i + j]) || check.HasRscope(str[i + j]))
                             {
                                 getList.AddLast(str[i + j]);
                                 j = j + 1;
+                                //if it has Semicolon
                                 if (check.HasSemi(str[i + j]))
                                 {
                                     getList.AddLast(str[i + j]);
                                     i = i + 4;
                                 }
+                                //or if it has double quote or ) parenthesis *recursion may occur
                                 else if(check.HasStringLiteral(str[i + j]) || check.HasRscope(str[i + j]))
                                 {
                                     getList.AddLast(str[i + j]);
                                     j = j + 1;
+                                    //if it has Semicolon
                                     if (check.HasSemi(str[i + j]))
                                     {
                                         getList.AddLast(str[i + j]);
@@ -256,15 +273,19 @@ namespace CompilerMachineProblem2
                     else if (str[i] == "void")
                     {
                         getList.AddLast(str[i]);
+                        //if function has Keyword or TERM
                         if (check.HasKeyword(str[i + 1]) || check.HasTERM(str[i + 1]))
                         {
                             getList.AddLast(str[i + 1]);
+                            //if function has ( parenthesis
                             if (check.HasLscope(str[i + 2]))
                             {
                                 getList.AddLast(str[i + 2]);
+                                //if function has ) parentheis
                                 if (check.HasRscope(str[i + 3]))
                                 {
                                     getList.AddLast(str[i + 3]);
+                                    //if function has opening brace
                                     if(check.HasLbrace(str[i + 4]))
                                     {
                                         cBrace++;
@@ -301,6 +322,7 @@ namespace CompilerMachineProblem2
 
 
                     BRACE:
+                    //if brace has closine brace
                     if (check.HasRbrace(str[i]))
                     {
                         cBrace++;
