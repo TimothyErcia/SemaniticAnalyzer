@@ -79,7 +79,7 @@ namespace CompilerMachineProblem2
 
             public bool HasStringLiteral(string type)
             {
-                if(type.StartsWith("\"") || type.EndsWith("\""))
+                if(type.StartsWith("\"") || type.EndsWith("\"") || type.Contains("\""))
                 { return true; }
                 else
                 { return false; }
@@ -129,7 +129,7 @@ namespace CompilerMachineProblem2
             txt = richTextBox1.Text;
             txt = txt.Replace(" ", "\n");
             txt = txt.Replace("(", "(\n");
-            txt = txt.Replace(")", "\n)");
+            //txt = txt.Replace(")", "\n)");
             txt = txt.Replace(";", "\n;");
             txt = txt.Replace(",", "\n,");
             richTextBox4.Text = txt;
@@ -245,20 +245,15 @@ namespace CompilerMachineProblem2
                         //if it has ( parenthesis
                         if (check.HasLscope(str[i + 1]))
                         {
-                            getList.AddLast(str[i + 1]);
-                            //if it has double quote or ) parenthesis
-                            if(check.HasStringLiteral(str[i + j]))
-                            {
-                                getList.AddLast(str[i + j]);
-                                j = j + 1;
-                                //if it has double quote or ) parenthesis *recursion may occur
+                            getList.AddLast(str[i + 1]); 
+                             //if it has double quote or ) parenthesis *recursion may occur
                                 ENDSRING:
                                 if(check.HasStringLiteral(str[i + j]))
                                 {
                                     getList.AddLast(str[i + j]);
                                     j = j + 1;
                                     //if it has ) parentheisi
-                                    if (check.HasRscope(str[i + j]))
+                                    if (check.HasRscope(str[i + j]) || check.HasStringLiteral(str[i + j]))
                                     {
                                         getList.AddLast(str[i + j]);
                                         j = j + 1;
@@ -266,7 +261,8 @@ namespace CompilerMachineProblem2
                                         if (check.HasSemi(str[i + j]))
                                         {
                                             getList.AddLast(str[i + j]);
-                                            i = i + 7;
+                                        j = j + 1;
+                                            i = i + j;
                                         }
                                         else
                                         {
@@ -288,6 +284,24 @@ namespace CompilerMachineProblem2
                                     getList.AddLast(str[i + j]);
                                     j = j + 1;
                                     goto ENDSRING;
+                                }
+
+                                else if(check.HasRscope(str[i + j]))
+                                {
+                                    getList.AddLast(str[i + j]);
+                                    j = j + 1;
+                                    if(check.HasSemi(str[i + j]))
+                                    {
+                                        getList.AddLast(str[i + j]);
+                                        j = j + 1;
+                                        i = i + j;
+                                    }
+                                    else
+                                    {
+                                        errorList.Add(str[i + j]);
+                                        richTextBox3.AppendText("\n Syntax Error ");
+                                        break;
+                                    }
                                 }
 
                                 else
@@ -316,11 +330,6 @@ namespace CompilerMachineProblem2
                                 richTextBox3.AppendText("\n Syntax Error ");
                                 break; }
                         }
-                        else
-                        { errorList.Add(str[i + 1]);
-                            richTextBox3.AppendText("\n Missing (");
-                            break; }
-                    }
 
                     //Function Declare (void)
                     else if (str[i] == "void")
@@ -334,15 +343,15 @@ namespace CompilerMachineProblem2
                             if (check.HasLscope(str[i + 2]))
                             {
                                 getList.AddLast(str[i + 2]);
-                                //if function has ) parentheis
+                                //if function has ) parentheis 
                                 if (check.HasRscope(str[i + 3]))
                                 {
-                                    getList.AddLast(str[i + 3]);
+                                    getList.AddLast(str[i + 3]); 
                                     //if function has opening brace
                                     if(check.HasLbrace(str[i + 4]))
                                     {
                                         cBrace++;
-                                        getList.AddLast(str[i + 4]);
+                                        getList.AddLast(str[i + 4]); 
                                         i = i + 5;
                                     }
                                     else
