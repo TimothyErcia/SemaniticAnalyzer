@@ -60,8 +60,8 @@ namespace CompilerMachineProblem2
                 if (type.Equals("int") || type.Equals("string") || type.Equals("double") || type.Equals("float") || type.Equals("char") ||
                     type.Equals("+") || type.Equals("-") || type.Equals("/") || type.Equals("*") || type.Equals("void") ||
                     type.Equals("main") || type.Equals("scanf") || type.Equals("printf") || type.Equals("=") || type.Equals("(") || type.Equals(")") ||
-                    type.Equals(";") || type.StartsWith("\"") || type.EndsWith("\"") || type.EndsWith(";") || type.StartsWith("(") || type.StartsWith(")")
-                    || type.StartsWith("{") || type.StartsWith("}") || type.Equals("{") || type.Equals("}"))
+                    type.Equals(";") || type.StartsWith("\"") || type.EndsWith("\"") || type.EndsWith(";") || type.StartsWith("(") || type.EndsWith(")")
+                    || type.StartsWith("{") || type.EndsWith("}") || type.Equals("{") || type.Equals("}"))
                 {
                     return false;
                 }
@@ -79,7 +79,7 @@ namespace CompilerMachineProblem2
 
             public bool HasStringLiteral(string type)
             {
-                if(type.StartsWith("\"") || type.EndsWith("\"") || type.Contains("\""))
+                if(type.StartsWith("\"") || type.EndsWith("\""))
                 { return true; }
                 else
                 { return false; }
@@ -129,7 +129,6 @@ namespace CompilerMachineProblem2
             txt = richTextBox1.Text;
             txt = txt.Replace(" ", "\n");
             txt = txt.Replace("(", "(\n");
-            //txt = txt.Replace(")", "\n)");
             txt = txt.Replace(";", "\n;");
             txt = txt.Replace(",", "\n,");
             richTextBox4.Text = txt;
@@ -137,7 +136,7 @@ namespace CompilerMachineProblem2
             LinkedList<string> getList = new LinkedList<string>();
             List<string> errorList = new List<string>();
             VarDeclareCheck check = new VarDeclareCheck();
-            int j = 2;
+            int j = 0;
             int i = 0;
             int cBrace = 0;
 
@@ -169,7 +168,7 @@ namespace CompilerMachineProblem2
                                 {
                                     getList.AddLast(str[i + 3]);
                                     //if it has semicolon
-                                    j = j + 2;
+                                    j = j + 4;
                                     RECURSEVAR:
                                     if(check.HasSemi(str[i + j]))
                                     {
@@ -247,8 +246,13 @@ namespace CompilerMachineProblem2
                         {
                             getList.AddLast(str[i + 1]); 
                              //if it has double quote or ) parenthesis *recursion may occur
+                             if(check.HasStringLiteral(str[i + 2]))
+                            {
+                                getList.AddLast(str[i + 2]);
+                                j = j + 3;
                                 ENDSRING:
-                                if(check.HasStringLiteral(str[i + j]))
+                                //if it has double quote
+                                if (check.HasStringLiteral(str[i + j]))
                                 {
                                     getList.AddLast(str[i + j]);
                                     j = j + 1;
@@ -261,7 +265,7 @@ namespace CompilerMachineProblem2
                                         if (check.HasSemi(str[i + j]))
                                         {
                                             getList.AddLast(str[i + j]);
-                                        j = j + 1;
+                                            j = j + 1;
                                             i = i + j;
                                         }
                                         else
@@ -278,19 +282,21 @@ namespace CompilerMachineProblem2
                                         break;
                                     }
                                 }
+
                                 //or if it has TERM
-                                else if(check.HasTERM(str[i + j]))
+                                else if (check.HasTERM(str[i + j]))
                                 {
                                     getList.AddLast(str[i + j]);
                                     j = j + 1;
                                     goto ENDSRING;
                                 }
 
-                                else if(check.HasRscope(str[i + j]))
+
+                                else if (check.HasRscope(str[i + j]))
                                 {
                                     getList.AddLast(str[i + j]);
                                     j = j + 1;
-                                    if(check.HasSemi(str[i + j]))
+                                    if (check.HasSemi(str[i + j]))
                                     {
                                         getList.AddLast(str[i + j]);
                                         j = j + 1;
@@ -298,36 +304,24 @@ namespace CompilerMachineProblem2
                                     }
                                     else
                                     {
-                                        errorList.Add(str[i + j]);
-                                        richTextBox3.AppendText("\n Syntax Error ");
+                                        richTextBox3.AppendText("\n Syntax Error: Missing ; ");
                                         break;
                                     }
                                 }
 
                                 else
-                                { errorList.Add(str[i + j]);
-                                    richTextBox3.AppendText("\n Syntax Error ");
-                                    break; }
-                            }
-                            //or if it has ) parenthesis
-                            else if(check.HasRscope(str[i + j]))
-                            {
-                                getList.AddLast(str[i + j]);
-                                if (check.HasSemi(str[i + j]))
                                 {
-                                    getList.AddLast(str[i + j]);
-                                    i = i + 5;
-                                }
-                                else
-                                {
-                                    errorList.Add(str[i + j]);
-                                    richTextBox3.AppendText("\n Syntax Error ");
+                                    richTextBox3.AppendText("\n Syntax Error: Missing Expression or Statement ");
                                     break;
                                 }
+
+                            }
+                                else
+                                {   richTextBox3.AppendText("\n Syntax Error: Missing Expression or Statement ");
+                                    break; }
                             }
                             else
-                            { errorList.Add(str[i + j]);
-                                richTextBox3.AppendText("\n Syntax Error ");
+                            {    richTextBox3.AppendText("\n Syntax Error: Missing ( ");
                                 break; }
                         }
 
@@ -361,20 +355,17 @@ namespace CompilerMachineProblem2
                                     }
                                 }
                                 else
-                                {
-                                    errorList.Add(str[i + 3]);
-                                    richTextBox3.AppendText("\n Syntax Error: Missing )");
+                                {   richTextBox3.AppendText("\n Syntax Error: Missing )");
                                     break;
                                 }
                             }
                             else
-                            { errorList.Add(str[i + 2]);
-                                richTextBox3.AppendText("\n Missing (");
+                            {   richTextBox3.AppendText("\n Syntax Error: Missing (");
                                 break; }
                         }
                         else
                         { errorList.Add(str[i + 1]);
-                            richTextBox3.AppendText("\n Missing keyword");
+                            richTextBox3.AppendText("\n Missing keyword ");
                             break; }
                     }
 
