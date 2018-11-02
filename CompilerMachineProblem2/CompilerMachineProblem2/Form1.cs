@@ -13,6 +13,11 @@ namespace CompilerMachineProblem2
 {
     public partial class Form1 : Form
     {
+        VarDeclareCheck check = new VarDeclareCheck();
+        int j = 0;
+        int k = 0;
+        int i = 0;
+        int cBrace;
         string txt;
         //Lexical Analyzer
         class VarDeclareCheck
@@ -61,7 +66,7 @@ namespace CompilerMachineProblem2
                     type.Equals("+") || type.Equals("-") || type.Equals("/") || type.Equals("*") || type.Equals("void") ||
                     type.Equals("main") || type.Equals("scanf") || type.Equals("printf") || type.Equals("=") || type.Equals("(") || type.Equals(")") ||
                     type.Equals(";") || type.StartsWith("\"") || type.EndsWith("\"") || type.EndsWith(";") || type.StartsWith("(") || type.EndsWith(")")
-                    || type.StartsWith("{") || type.EndsWith("}") || type.Equals("{") || type.Equals("}"))
+                    || type.StartsWith("{") || type.EndsWith("}") || type.Equals("{") || type.Equals("}") || type.Equals(",") || type.StartsWith(" "))
                 {
                     return false;
                 }
@@ -116,6 +121,12 @@ namespace CompilerMachineProblem2
                 else
                 { return false; }
             }
+
+            public bool HasSeparator(string type)
+            {
+                return type.EndsWith(",") || type.StartsWith(",") ? true : false;
+            }
+
         }
 
         public Form1()
@@ -125,291 +136,204 @@ namespace CompilerMachineProblem2
 
         private void button1_Click(object sender, EventArgs e)
         {
+            output form = new output();
+
             //Initial Text
-            txt = richTextBox1.Text;
-            txt = txt.Replace(" ", "\n");
-            txt = txt.Replace("(", "(\n");
-            txt = txt.Replace(";", "\n;");
-            txt = txt.Replace(",", "\n,");
-            richTextBox4.Text = txt;
-            string[] str = richTextBox4.Lines;
-            LinkedList<string> getList = new LinkedList<string>();
-            List<string> errorList = new List<string>();
-            VarDeclareCheck check = new VarDeclareCheck();
-            int j = 0;
-            int i = 0;
-            int cBrace = 0;
+            string[] str = richTextBox1.Lines;
+            List<string> outputList = new List<string>();
+            Dictionary<string, string> varExpression = new Dictionary<string, string>();
+            HashSet<string> varIdentifier = new HashSet<string>();
 
             //Algorithm
             try
             {
-                do
+                for (i = 0; i < str.Length; i++)
                 {
-                    //Basic Variable
-                    if (check.HasDtype(str[i]))
-                    {
-                        getList.AddLast(str[i]);
-                        //If it has Identifier
-                        if(check.HasTERM(str[i + 1]))
-                        {
-                            getList.AddLast(str[i + 1]);
-                            //if it has a Semicolon
-                            if(check.HasSemi(str[i + 2]))
-                            {
-                                getList.AddLast(str[i + 2]);
-                                i = i + 3;
-                            }
-                            //Basic var declare with expression or with TERM
-                            else if (check.HasExpression(str[i + 2]))
-                            {
-                                getList.AddLast(str[i + 2]);
-                                //if it has double quote in the beggining or in the end
-                                if (check.HasStringLiteral(str[i + 3]) || check.HasTERM(str[i + 3]))
-                                {
-                                    getList.AddLast(str[i + 3]);
-                                    //if it has semicolon
-                                    j = j + 4;
-                                    RECURSEVAR:
-                                    if(check.HasSemi(str[i + j]))
-                                    {
-                                        getList.AddLast(str[i + j]);
-                                        j = j + 1;
-                                        i = i + j;
-                                    }
 
-                                    //if it has operator
-                                    else if (check.HasOperator(str[i + j]))
+                    str[i] = str[i].Replace(" ", "\n");
+                    str[i] = str[i].Replace("(", "(\n");
+                    str[i] = str[i].Replace(")", "\n)");
+                    str[i] = str[i].Replace(";", "\n;");
+                    richTextBox4.Text = str[i];
+                    string[] str2 = richTextBox4.Lines;
+
+                    try
+                    {
+                        //Variable declare
+                        if (check.HasDtype(str2[j]))
+                        {
+                            try
+                            {
+                                if (check.HasTERM(str2[j + 1]))
+                                {
+                                    varIdentifier.Add(str2[j + 1]);
+                                    try
                                     {
-                                        getList.AddLast(str[i + j]);
-                                        j = j + 1;
-                                        //if it has TERM or double quote
-                                        if (check.HasTERM(str[i + j]) || check.HasStringLiteral(str[i + j]))
+                                        if (check.HasExpression(str2[j + 2]))
                                         {
-                                            getList.AddLast(str[i + j]);
-                                            //if it has Semicolon
-                                            j = j + 1;
-                                            if(check.HasSemi(str[i + j]))
+                                            try
                                             {
-                                                getList.AddLast(str[i + j]);
-                                                i = i + j;
+                                                if (check.HasStringLiteral(str2[j + 3]) || check.HasTERM(str2[j + 3]))
+                                                {
+                                                    varExpression.Add(str2[j + 1], str2[j + 3]);
+                                                    k = 4;
+                                                    RECURSEVAR:
+                                                    try
+                                                    {
+                                                        if (check.HasSemi(str2[j + k]))
+                                                        { }
+
+                                                        else if (check.HasOperator(str2[j + k]))
+                                                        {
+                                                            k = k + 1;
+                                                            try
+                                                            {
+                                                                if (check.HasTERM(str2[j + k]) || check.HasStringLiteral(str2[j + k]))
+                                                                {
+                                                                    k = k + 1;
+                                                                    try
+                                                                    {
+                                                                        if (check.HasSemi(str2[j + k]))
+                                                                        {
+
+                                                                        }
+                                                                    }
+                                                                    catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Expected Semicolon "); }
+                                                                }
+                                                            }
+                                                            catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Missing Identifier "); }
+                                                        }
+
+                                                        else if (check.HasTERM(str2[j + k]) || check.HasStringLiteral(str2[j + k]))
+                                                        {
+                                                            varExpression.Add(str2[j + 1], str2[j + k]);
+                                                            k = k + 1;
+                                                            goto RECURSEVAR;
+                                                        }
+
+                                                    }
+                                                    catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Expected Semicolon "); }
+                                                }
                                             }
-                                            else
+                                            catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Missing Identifier "); } 
+                                        }
+                                    }
+                                    catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Expected Semicolon "); }
+                                }
+                                else
+                                { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Missing Identifier "); }
+                            }
+                            catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Missing Identifier "); }
+                        }
+
+                        //printf
+                        else if (check.HasKeyword(str2[j]))
+                        {
+                            try
+                            {
+                                if (check.HasLscope(str2[j + 1]))
+                                {
+                                    try
+                                    {
+                                        if (check.HasStringLiteral(str2[j + 2]) || check.HasTERM(str2[j + 2]))
+                                        {
+                                            outputList.Add(str2[j+2]);
+                                            k = 3;
+                                            RECURSKEY:
+                                            try
                                             {
-                                                errorList.Add(str[i + j]);
-                                                richTextBox3.AppendText("\n Syntax Error: Missing ");
-                                                break;
+                                                if (check.HasStringLiteral(str2[j + k]))
+                                                {
+                                                    outputList.Add(str2[j + k]);
+                                                    k = k + 1;
+                                                    try
+                                                    {
+                                                        if (check.HasRscope(str2[j + k]) || check.HasStringLiteral(str2[j + k]))
+                                                        {
+                                                            k = k + 1;
+                                                            try
+                                                            {
+                                                                if (check.HasSemi(str2[j + k]))
+                                                                { }
+                                                            }
+                                                            catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Expected Semicolon"); }
+                                                        }
+                                                    }
+                                                    catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Missing Statement "); }
+                                                }
+                                                else if (check.HasTERM(str2[j + k]))
+                                                {
+                                                    outputList.Add(str2[j + k]);
+                                                    k = k + 1;
+                                                    goto RECURSKEY;
+                                                }
+
+                                                else if (check.HasRscope(str2[j + k]))
+                                                {
+                                                    k = k + 1;
+                                                    try
+                                                    {
+                                                        if (check.HasSemi(str2[j + k]))
+                                                        { }
+                                                    }
+                                                    catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Expected Semicolon"); }
+                                                }
                                             }
-                                        }
-                                        else
-                                        {
-                                            errorList.Add(str[i + j]);
-                                            richTextBox3.AppendText("\n Syntax Error: Missing ");
-                                            break;
+                                            catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Expected ) "); }
                                         }
                                     }
-                                    //recursion of string inside of declaration
-                                    else if(check.HasTERM(str[i + j]) || check.HasStringLiteral(str[i + j]))
-                                    {
-                                        getList.AddLast(str[i + j]);
-                                        j = j + 1;
-                                        goto RECURSEVAR;
-                                    }
-
-                                    else
-                                    { errorList.Add(str[i + 4]);
-                                        richTextBox3.AppendText("\n Syntax Error ");
-                                        break; }
+                                    catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Missing Expression or Statement "); }
                                 }
-
-                                else
-                                { errorList.Add(str[i + 3]);
-                                    richTextBox3.AppendText("\n Syntax Error");
-                                    break; }
                             }
-                            else
-                            { errorList.Add(str[i + 2]);
-                                richTextBox3.AppendText("\n Missing Expression");
-                                break; }
+                            catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Missing ( "); }
                         }
-                        else
-                        { errorList.Add(str[i + 1]);
-                            richTextBox3.AppendText("\n Missing identifier");
-                            break; }
-                    }
 
-                    //printf & scanf
-                    else if(check.HasKeyword(str[i]))
-                    {
-                        getList.AddLast(str[i]);
-                        //if it has ( parenthesis
-                        if (check.HasLscope(str[i + 1]))
+                        //Function declare (void)
+                        else if(str2[j] == "void")
                         {
-                            getList.AddLast(str[i + 1]); 
-                             //if it has double quote or ) parenthesis *recursion may occur
-                             if(check.HasStringLiteral(str[i + 2]))
+                            try
                             {
-                                getList.AddLast(str[i + 2]);
-                                j = j + 3;
-                                ENDSRING:
-                                //if it has double quote
-                                if (check.HasStringLiteral(str[i + j]))
+                                if (check.HasKeyword(str2[j + 1]) || check.HasTERM(str2[j + 1]))
                                 {
-                                    getList.AddLast(str[i + j]);
-                                    j = j + 1;
-                                    //if it has ) parentheisi
-                                    if (check.HasRscope(str[i + j]) || check.HasStringLiteral(str[i + j]))
+                                    try
                                     {
-                                        getList.AddLast(str[i + j]);
-                                        j = j + 1;
-                                        //if it has Semicolon
-                                        if (check.HasSemi(str[i + j]))
+                                        if (check.HasLscope(str2[j + 2]))
                                         {
-                                            getList.AddLast(str[i + j]);
-                                            j = j + 1;
-                                            i = i + j;
-                                        }
-                                        else
-                                        {
-                                            errorList.Add(str[i + j]);
-                                            richTextBox3.AppendText("\n Syntax Error ");
-                                            break;
+                                            cBrace++;
+                                            try
+                                            {
+                                                if (check.HasRscope(str2[j + 4]))
+                                                { }
+                                            }
+                                            catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Missing ) "); }
                                         }
                                     }
-                                    else
-                                    {
-                                        errorList.Add(str[i + j]);
-                                        richTextBox3.AppendText("\n Syntax Error ");
-                                        break;
-                                    }
-                                }
-
-                                //or if it has TERM
-                                else if (check.HasTERM(str[i + j]))
-                                {
-                                    getList.AddLast(str[i + j]);
-                                    j = j + 1;
-                                    goto ENDSRING;
-                                }
-
-
-                                else if (check.HasRscope(str[i + j]))
-                                {
-                                    getList.AddLast(str[i + j]);
-                                    j = j + 1;
-                                    if (check.HasSemi(str[i + j]))
-                                    {
-                                        getList.AddLast(str[i + j]);
-                                        j = j + 1;
-                                        i = i + j;
-                                    }
-                                    else
-                                    {
-                                        richTextBox3.AppendText("\n Syntax Error: Missing ; ");
-                                        break;
-                                    }
-                                }
-
-                                else
-                                {
-                                    richTextBox3.AppendText("\n Syntax Error: Missing Expression or Statement ");
-                                    break;
-                                }
-
-                            }
-                                else
-                                {   richTextBox3.AppendText("\n Syntax Error: Missing Expression or Statement ");
-                                    break; }
-                            }
-                            else
-                            {    richTextBox3.AppendText("\n Syntax Error: Missing ( ");
-                                break; }
-                        }
-
-                    //Function Declare (void)
-                    else if (str[i] == "void")
-                    {
-                        getList.AddLast(str[i]);
-                        //if function has Keyword or TERM
-                        if (check.HasKeyword(str[i + 1]) || check.HasTERM(str[i + 1]))
-                        {
-                            getList.AddLast(str[i + 1]);
-                            //if function has ( parenthesis
-                            if (check.HasLscope(str[i + 2]))
-                            {
-                                getList.AddLast(str[i + 2]);
-                                //if function has ) parentheis 
-                                if (check.HasRscope(str[i + 3]))
-                                {
-                                    getList.AddLast(str[i + 3]); 
-                                    //if function has opening brace
-                                    if(check.HasLbrace(str[i + 4]))
-                                    {
-                                        cBrace++;
-                                        getList.AddLast(str[i + 4]); 
-                                        i = i + 5;
-                                    }
-                                    else
-                                    {
-                                        richTextBox3.AppendText("\n Missing { brace");
-                                        break;
-                                    }
-                                }
-                                else
-                                {   richTextBox3.AppendText("\n Syntax Error: Missing )");
-                                    break;
+                                    catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Missing ( "); }
                                 }
                             }
-                            else
-                            {   richTextBox3.AppendText("\n Syntax Error: Missing (");
-                                break; }
-                        }
-                        else
-                        { errorList.Add(str[i + 1]);
-                            richTextBox3.AppendText("\n Missing keyword ");
-                            break; }
-                    }
-
-                    //if function has opening brace
-                    else if (check.HasRbrace(str[i]))
-                    {
-                        cBrace++;
-                        if (cBrace % 2 == 0)
-                        {
-                            getList.AddLast(str[i]);
-                            i = i + 2;
-                        }
-                        else
-                        {
-                            richTextBox3.AppendText("\n Missing { brace");
-                            break;
+                            catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Missing Expression or Statement "); }
                         }
                     }
-
-                    else
-                    {
-                        richTextBox3.AppendText("\n Missing Datatype");
-                        break;
-                    }
-
-                } while (i <= str.Length);
+                    catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Missing Datatype "); }
+                }
             }
             catch
             { }
-                
-            foreach(var item in getList)
+
+            foreach(KeyValuePair<string, string> ss in varExpression)
             {
-                richTextBox2.AppendText(item + " ");
+                richTextBox3.AppendText(ss.Key + " " + ss.Value);
             }
 
-            foreach (var item in errorList)
+            foreach(string ss in varIdentifier)
             {
-                richTextBox3.AppendText(item + " ");
+                richTextBox3.AppendText(ss);
             }
+
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            richTextBox2.Text = "";
             richTextBox3.Text = "";
             richTextBox4.Text = "";
         }

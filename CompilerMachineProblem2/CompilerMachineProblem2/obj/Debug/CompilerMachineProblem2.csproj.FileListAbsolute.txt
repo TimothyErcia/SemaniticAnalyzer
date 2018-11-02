@@ -8,3 +8,4 @@ D:\PROG_STUFF\C#\CompilerMachineProblem2\CompilerMachineProblem2\obj\Debug\Compi
 D:\PROG_STUFF\C#\CompilerMachineProblem2\CompilerMachineProblem2\obj\Debug\CompilerMachineProblem2.csproj.CoreCompileInputs.cache
 D:\PROG_STUFF\C#\CompilerMachineProblem2\CompilerMachineProblem2\obj\Debug\CompilerMachineProblem2.exe
 D:\PROG_STUFF\C#\CompilerMachineProblem2\CompilerMachineProblem2\obj\Debug\CompilerMachineProblem2.pdb
+D:\PROG_STUFF\C#\CompilerMachineProblem2\CompilerMachineProblem2\obj\Debug\CompilerMachineProblem2.output.resources
