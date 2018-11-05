@@ -229,10 +229,9 @@ namespace CompilerMachineProblem2
                             catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Missing Identifier "); }
                         }
 
-                        else if (check.HasRbrace(str2[j]) && cBrace == 1)
-                        {
-                            cBrace = cBrace + 1;
-                        }
+                        //checks for tight brace
+                        else if (check.HasRbrace(str2[j]))
+                        { cBrace++; }
 
                         //printf & scanf
                         else if (check.HasKeyword(str2[j]))
@@ -245,7 +244,7 @@ namespace CompilerMachineProblem2
                                     {
                                         if (check.HasStringLiteral(str2[j + 2]) || check.HasTERM(str2[j + 2]))
                                         {
-                                            outputList.Add(str2[j + 2]);
+                                            string a = str2[j + 2];
                                             k = 3;
                                             RECURSKEY:
                                             try
@@ -291,7 +290,7 @@ namespace CompilerMachineProblem2
 
                                                 else if (check.HasStringLiteral(str2[j + k]))
                                                 {
-                                                    outputList.Add(str2[j + k]);
+                                                    a = a + " " + str2[j + k]; 
                                                     k = k + 1;
                                                     try
                                                     {
@@ -301,7 +300,7 @@ namespace CompilerMachineProblem2
                                                             try
                                                             {
                                                                 if (check.HasSemi(str2[j + k]))
-                                                                { }
+                                                                { outputList.Add(a); }
                                                             }
                                                             catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Expected Semicolon"); }
                                                         }
@@ -311,7 +310,7 @@ namespace CompilerMachineProblem2
                                                 }
                                                 else if (check.HasTERM(str2[j + k]))
                                                 {
-                                                    outputList.Add(str2[j + k]);
+                                                    a = a + " " + str2[j + k];
                                                     k = k + 1;
                                                     goto RECURSKEY;
                                                 }
@@ -383,13 +382,9 @@ namespace CompilerMachineProblem2
                                                 {
                                                     try
                                                     {
+                                                        
                                                         if(check.HasLbrace(str2[j+5]))
-                                                        {
-                                                            cBrace++;
-                                                            if (cBrace % 2 == 0)
-                                                            {  }
-                                                            else { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Expected { "); }
-                                                        }
+                                                        { cBrace = 1; }
                                                     }
                                                     catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Expected { "); }
                                                 }
@@ -405,23 +400,37 @@ namespace CompilerMachineProblem2
                     }
                     catch { }
                 }
+
+                //checks if {} is balance
+                if (cBrace % 2 == 0)
+                { cBrace = 0; }
+                else { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Expected } "); }
             }
             catch
             { }
 
-
-            foreach (string ss in outputList)
+            if(richTextBox3.Lines.Count() == 0)
             {
-                foreach(KeyValuePair<string, string> pair in varExpression)
+                foreach (string ss in outputList)
                 {
-                    if(ss.Contains("\"") || pair.Value.Contains("\""))
+                    foreach (KeyValuePair<string, string> pair in varExpression)
                     {
-                        string sb = ss.Replace("\"", "");
-                        string sbb = pair.Value.Replace("\"", "");
-                        richTextBox2.AppendText(sb + sbb + "\n");
-                    }  
+                        if (ss.Contains("\"") || pair.Value.Contains("\""))
+                        {
+                            string sb = ss.Replace("\"", "");
+                            string sbb = pair.Value.Replace("\"", "");
+                            richTextBox2.AppendText(sb + " " + sbb + "\n");
+                        }
+                    };
+                }
+
+                foreach(string ss in outputList)
+                {
+                    string sb = ss.Replace("\"", "");
+                    richTextBox2.AppendText(sb + " ");
                 }
             }
+            
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -429,6 +438,7 @@ namespace CompilerMachineProblem2
             richTextBox3.Text = "";
             richTextBox2.Text = "";
             richTextBox4.Text = "";
+            cBrace = 0;
         }
     }
 }
