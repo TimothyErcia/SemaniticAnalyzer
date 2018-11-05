@@ -257,14 +257,34 @@ namespace CompilerMachineProblem2
                                                     {
                                                         if (check.HasSeparator(str2[j + k]))
                                                         {
-                                                            if (str2[j + k].Equals(varIdentifier2))
-                                                            { outputList.Add(str2[j + k]); }
                                                             k = k + 1;
                                                             try
                                                             {
-                                                                if (check.HasTERM(str2[j + k]))
+                                                                if (str2[j + k].Equals(varIdentifier2))
+                                                                {                                                                    
+                                                                    try
+                                                                    {
+                                                                        k = k + 1;
+                                                                        if (check.HasRscope(str2[j + k]))
+                                                                        {
+                                                                            k = k + 1;
+                                                                            try
+                                                                            {
+                                                                                if (check.HasSemi(str2[j + k]))
+                                                                                {
+                                                                                    foreach(KeyValuePair<string, string> pair in varExpression)
+                                                                                    {
+                                                                                        outputList.Add(a + pair.Value);
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Expected Semicolon"); }
+                                                                        }
+                                                                    }
+                                                                    catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Expected )"); }
+                                                                }
+                                                                else
                                                                 {
-                                                                    
                                                                     try
                                                                     {
                                                                         k = k + 1;
@@ -321,38 +341,9 @@ namespace CompilerMachineProblem2
                                                     try
                                                     {
                                                         if (check.HasSemi(str2[j + k]))
-                                                        { }
+                                                        { outputList.Add(a); }
                                                     }
                                                     catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Expected Semicolon"); }
-                                                }
-
-                                                else if(check.HasSeparator(str2[j + k]))
-                                                {
-                                                    k = k + 1;
-                                                    try
-                                                    {
-                                                        if (check.HasTERM(str2[j + k]))
-                                                        {
-                                                            if(str2[j + k].Equals(varIdentifier2))
-                                                            { outputList.Add(str2[j + k]); }
-                                                            k = k + 1;
-                                                            try
-                                                            {
-                                                                if(check.HasRscope(str2[j + k]))
-                                                                {
-                                                                    k = k + 1;
-                                                                    try
-                                                                    {
-                                                                        if (check.HasSemi(str2[j + k]))
-                                                                        { }
-                                                                    }
-                                                                    catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Expected Semicolon"); }
-                                                                }
-                                                            }
-                                                            catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Expected )"); }
-                                                        }
-                                                    }
-                                                    catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Expected Comma ( , )"); }
                                                 }
                                                 else { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Missing Expression or Statement"); }
                                             }
@@ -396,7 +387,8 @@ namespace CompilerMachineProblem2
                                 }
                             }
                             catch { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Missing Expression or Statement "); }
-                        } 
+                        }
+                        else { richTextBox3.AppendText("\nLine: " + (i + 1) + " Syntax Error: Missing Datatype or Statement "); }
                     }
                     catch { }
                 }
@@ -411,23 +403,23 @@ namespace CompilerMachineProblem2
 
             if(richTextBox3.Lines.Count() == 0)
             {
+                //foreach (string ss in outputList)
+                //{
+                //    foreach (KeyValuePair<string, string> pair in varExpression)
+                //    {
+                //        if (ss.Contains("\"") || pair.Value.Contains("\""))
+                //        {
+                //            string sb = ss.Replace("\"", "");
+                //            string sbb = pair.Value.Replace("\"", "");
+                //            richTextBox2.AppendText(sb + " " + sbb + "\n");
+                //        }
+                //    };
+                //}
+
                 foreach (string ss in outputList)
                 {
-                    foreach (KeyValuePair<string, string> pair in varExpression)
-                    {
-                        if (ss.Contains("\"") || pair.Value.Contains("\""))
-                        {
-                            string sb = ss.Replace("\"", "");
-                            string sbb = pair.Value.Replace("\"", "");
-                            richTextBox2.AppendText(sb + " " + sbb + "\n");
-                        }
-                    };
-                }
-
-                foreach(string ss in outputList)
-                {
                     string sb = ss.Replace("\"", "");
-                    richTextBox2.AppendText(sb + " ");
+                    richTextBox2.AppendText(sb + " " + "\n");
                 }
             }
             
